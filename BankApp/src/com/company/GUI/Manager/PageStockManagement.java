@@ -1,0 +1,240 @@
+package com.company.GUI.Manager;
+
+import com.company.Currency.Currency;
+import com.company.Factories.StockFactory;
+import com.company.GUI.PageManager;
+import com.company.GUI.MyPage;
+import com.company.Persons.Manager;
+import com.company.Stock.Stock;
+import com.company.Stock.StockMarket;
+import com.company.Utils.Parser;
+import com.company.Utils.Writer;
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Scanner;
+
+/**
+ * Class of page for managing stocks
+ */
+public class PageStockManagement implements MyPage {
+    private JPanel rootPanel;
+    private JLabel lbTitle;
+    private JLabel lbAction;
+    private JComboBox cbAction;
+    private JPanel panel1;
+    private JLabel lbStock1;
+    private JComboBox cbStock1;
+    private JLabel lbPrice1;
+    private JTextField tfPrice1;
+    private JPanel panel2;
+    private JLabel lbStock2;
+    private JComboBox cbStock2;
+    private JButton btConfirm;
+    private JButton btCancel;
+    private JPanel panel3;
+    private JLabel lbName3;
+    private JTextField tfName3;
+    private JLabel lbPrice3;
+    private JTextField tfPrice3;
+
+    /**
+     * Class responsible for allowing managers ot modify stocks
+     */
+
+    public PageStockManagement(Manager manager, Currency currency, StockMarket stockMarket) {
+        // set up comboboxes
+        Parser parser = new Parser();
+        Writer writer = new Writer();
+        StockFactory stockFactory = new StockFactory();
+        Map<String, Double> allStocks = parser.parseAllStockInfo();
+        DefaultComboBoxModel model = new DefaultComboBoxModel();
+        for (Map.Entry<String, Double> entry : allStocks.entrySet()) {
+            String stockinfo = entry.getKey() + ", price=" + entry.getValue();
+            model.addElement(stockinfo);
+        }
+        cbStock1.setModel(model);
+        cbStock2.setModel(model);
+
+        btCancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                PageManager.backToOldPage();
+            }
+        });
+        cbAction.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (cbAction.getSelectedItem().equals("update price")) {
+                    panel1.setVisible(true);
+                    panel2.setVisible(false);
+                    panel3.setVisible(false);
+                } else if (cbAction.getSelectedItem().equals("delete stock")) {
+                    panel1.setVisible(false);
+                    panel2.setVisible(true);
+                    panel3.setVisible(false);
+                } else if (cbAction.getSelectedItem().equals("add stock")) {
+                    panel1.setVisible(false);
+                    panel2.setVisible(false);
+                    panel3.setVisible(true);
+                }
+            }
+        });
+        btConfirm.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (cbAction.getSelectedItem().equals("update price")) {
+                    String name = (String) cbStock1.getSelectedItem();
+                    name = name.split(",")[0];
+                    double price = Double.parseDouble(tfPrice1.getText());
+                    Stock stock = stockFactory.produceSingleStock(name, price);
+                    try {
+                        writer.updateStock(stock, false);
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                    displayConfirm(1);
+                } else if (cbAction.getSelectedItem().equals("delete stock")) {
+                    String name = (String) cbStock2.getSelectedItem();
+                    name = name.split(",")[0];
+                    Stock stock = stockFactory.produceSingleStock(name, 0.0);
+                    try {
+                        writer.updateStock(stock, true);
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                    displayConfirm(2);
+                } else if (cbAction.getSelectedItem().equals("add stock")) {
+                    String name = tfName3.getText();
+                    Double price = Double.parseDouble(tfPrice3.getText());
+                    Stock stock = stockFactory.produceSingleStock(name, price);
+                    try {
+                        writer.updateStock(stock, false);
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                    displayConfirm(3);
+                }
+            }
+        });
+    }
+
+    {
+// GUI initializer generated by IntelliJ IDEA GUI Designer
+// >>> IMPORTANT!! <<<
+// DO NOT EDIT OR ADD ANY CODE HERE!
+        $$$setupUI$$$();
+    }
+
+    /**
+     * Method generated by IntelliJ IDEA GUI Designer
+     * >>> IMPORTANT!! <<<
+     * DO NOT edit this method OR call it in your code!
+     *
+     * @noinspection ALL
+     */
+    private void $$$setupUI$$$() {
+        rootPanel = new JPanel();
+        rootPanel.setLayout(new GridLayoutManager(8, 1, new Insets(0, 0, 0, 0), -1, -1));
+        lbTitle = new JLabel();
+        lbTitle.setText("Stock Management");
+        rootPanel.add(lbTitle, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        lbAction = new JLabel();
+        lbAction.setText("Choose action:");
+        rootPanel.add(lbAction, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        cbAction = new JComboBox();
+        final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
+        defaultComboBoxModel1.addElement("update price");
+        defaultComboBoxModel1.addElement("delete stock");
+        defaultComboBoxModel1.addElement("add stock");
+        defaultComboBoxModel1.addElement("see stocks");
+        cbAction.setModel(defaultComboBoxModel1);
+        rootPanel.add(cbAction, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel1 = new JPanel();
+        panel1.setLayout(new GridLayoutManager(4, 1, new Insets(0, 0, 0, 0), -1, -1));
+        rootPanel.add(panel1, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        lbStock1 = new JLabel();
+        lbStock1.setText("Choose stock:");
+        panel1.add(lbStock1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        cbStock1 = new JComboBox();
+        panel1.add(cbStock1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        lbPrice1 = new JLabel();
+        lbPrice1.setText("Enter new price:");
+        panel1.add(lbPrice1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        tfPrice1 = new JTextField();
+        panel1.add(tfPrice1, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel2 = new JPanel();
+        panel2.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+        rootPanel.add(panel2, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        lbStock2 = new JLabel();
+        lbStock2.setText("Choose stock:");
+        panel2.add(lbStock2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        cbStock2 = new JComboBox();
+        panel2.add(cbStock2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        btConfirm = new JButton();
+        btConfirm.setText("Confirm");
+        rootPanel.add(btConfirm, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        btCancel = new JButton();
+        btCancel.setText("Cancel");
+        rootPanel.add(btCancel, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3 = new JPanel();
+        panel3.setLayout(new GridLayoutManager(4, 1, new Insets(0, 0, 0, 0), -1, -1));
+        rootPanel.add(panel3, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        lbName3 = new JLabel();
+        lbName3.setText("Enter name of stock:");
+        panel3.add(lbName3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        tfName3 = new JTextField();
+        panel3.add(tfName3, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        lbPrice3 = new JLabel();
+        lbPrice3.setText("Enter price of stock:");
+        panel3.add(lbPrice3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        tfPrice3 = new JTextField();
+        panel3.add(tfPrice3, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+    }
+
+    /**
+     * @noinspection ALL
+     */
+    public JComponent $$$getRootComponent$$$() {
+        return rootPanel;
+    }
+
+    /**
+     * Method responsible for fetching root panel
+     * @return root panel
+     */
+    @Override
+    public JPanel getRootPanel() {
+        return rootPanel;
+    }
+
+    /**
+     * Method responsible for displaying confirmation info
+     * @param i
+     */
+    public void displayConfirm(int i) {
+        String mesg = null;
+        switch (i) {
+            case 1:
+                mesg = "Stock price update success";
+                break;
+            case 2:
+                mesg = "Stock delete success";
+                break;
+            case 3:
+                mesg = "Stock add succcess";
+                break;
+        }
+        JOptionPane.showMessageDialog(
+                rootPanel,
+                mesg,
+                "Message",
+                JOptionPane.PLAIN_MESSAGE);
+    }
+}
