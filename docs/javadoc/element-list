@@ -1,0 +1,14 @@
+com.company.Account
+com.company.Bank
+com.company.Bank.CustomerAllOptions
+com.company.Bank.ManagerAllOptions
+com.company.Currency
+com.company.Exceptions
+com.company.Factories
+com.company.GUI
+com.company.GUI.Customer
+com.company.GUI.Manager
+com.company.Persons
+com.company.Stock
+com.company.Transactions
+com.company.Utils
